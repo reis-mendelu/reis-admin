@@ -58,7 +58,7 @@
       
       const submitBtn = document.getElementById('submit-btn');
       const errorAlert = document.getElementById('error-alert');
-      const password = document.getElementById('password').value;
+      const password = document.getElementById('password').value.trim();
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Ověřování...';

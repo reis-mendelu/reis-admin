@@ -88,6 +88,7 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbyp3oXBJ8Nm6hSJcK1d6anoQq-jkzuUmvy1HkLwDPqfLn7S2zFL96eneIGxrNPHzOE9/exec';
     
     let token = localStorage.getItem('reis_token');
+    if (token) token = token.trim();
 
     if (!token) {
       window.location.href = 'index.html';
