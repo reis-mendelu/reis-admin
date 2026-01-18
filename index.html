@@ -15,14 +15,6 @@
           colors: {
             brand: {
               primary: '#79be15',
-              'primary-hover': '#6aab12',
-              accent: '#8DC843',
-              'accent-hover': '#7db83a',
-              dark: '#444444',
-            },
-            mendelu: {
-              green: '#79be15',
-              light: '#A0D25A',
               dark: '#444444',
             }
           },
@@ -30,38 +22,35 @@
             inter: ['Inter', 'sans-serif'],
           }
         }
-      },
-      daisyui: {
-        themes: [
-          {
-            "mendelu-dark": {
-              "primary": "#79be15",
-              "primary-content": "#ffffff",
-              "secondary": "#8DC843",
-              "secondary-content": "#ffffff",
-              "accent": "#3b82f6",
-              "accent-content": "#ffffff",
-              "neutral": "#1f2937",
-              "neutral-content": "#d1d5db",
-              "base-100": "#1f2937",
-              "base-200": "#111827",
-              "base-300": "#0f172a",
-              "base-content": "#f3f4f6",
-              "info": "#3b82f6",
-              "success": "#22c55e",
-              "warning": "#f59e0b",
-              "error": "#ef4444",
-            },
-          },
-        ],
       }
     }
   </script>
   <style>
     body { font-family: 'Inter', sans-serif; }
+    
+    /* OVERRIDES for Mendelu Green */
+    :root, [data-theme] {
+      --p: 84.8 79.5% 41.4%; 
+      --b1: 217.2 32.6% 17.5%;
+      --b2: 220 26% 14%;
+      --b3: 222.2 47.4% 11.2%;
+      --bc: 219 14.1% 94.9%;
+    }
+    
+    .btn-primary {
+      background-color: #79be15 !important;
+      border-color: #79be15 !important;
+      color: white !important;
+    }
+    .btn-primary:hover {
+      background-color: #6aab12 !important;
+      border-color: #6aab12 !important;
+    }
+    .input:focus { border-color: #79be15 !important; outline-color: #79be15 !important; }
+    .text-primary { color: #79be15 !important; }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 bg-base-200">
+<body class="min-h-screen flex items-center justify-center p-4 bg-base-300">
 
   <div class="card w-full max-w-sm bg-base-200 shadow-xl border border-base-content/10">
     <div class="card-body">
