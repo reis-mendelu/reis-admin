@@ -126,9 +126,13 @@ export default {
                 "base-300": "#f3f4f6",
                 "base-content": "#111827",
                 "info": "#3b82f6",
+                "info-content": "#ffffff",
                 "success": "#22c55e",
+                "success-content": "#ffffff",
                 "warning": "#f59e0b",
+                "warning-content": "#ffffff",
                 "error": "#ef4444",
+                "error-content": "#ffffff",
             },
         },
         {
@@ -146,9 +150,13 @@ export default {
                 "base-300": "#0f172a",
                 "base-content": "#f3f4f6",
                 "info": "#3b82f6",
+                "info-content": "#ffffff",
                 "success": "#22c55e",
+                "success-content": "#ffffff",
                 "warning": "#f59e0b",
+                "warning-content": "#ffffff",
                 "error": "#ef4444",
+                "error-content": "#ffffff",
             },
         },
     ],
@@ -157,18 +165,4 @@ export default {
     utils: true,     // Include utility classes
     logs: false,     // Disable console logs
   },
-  safelist: [
-    // DaisyUI components
-    'btn', 'btn-primary', 'btn-secondary', 'btn-ghost', 'btn-sm', 'btn-lg', 'btn-circle', 'btn-outline',
-    'card', 'card-body', 'card-title', 'card-actions',
-    'input', 'input-bordered',
-    'alert', 'alert-success', 'alert-error', 'alert-warning', 'alert-info',
-    'modal', 'modal-box', 'modal-backdrop',
-    'badge', 'badge-primary',
-    'skeleton',
-    'navbar', 'menu',
-    'form-control', 'label', 'label-text',
-    'loading', 'loading-spinner', 'loading-xs', 'loading-sm', 'loading-md', 'loading-lg',
-    'toast',
-  ],
 }
