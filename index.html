@@ -53,6 +53,9 @@
       if (session) {
         window.location.href = 'dashboard.html';
       }
+    }).catch((error) => {
+      console.error('Session check failed:', error.message);
+      // Silently continue to login page if session check fails
     });
 
     document.getElementById('login-form').addEventListener('submit', async (e) => {
