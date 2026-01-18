@@ -88,5 +88,10 @@
       }
     });
   </script>
+  <script>
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'mendelu-dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </body>
 </html>

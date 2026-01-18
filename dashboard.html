@@ -22,6 +22,12 @@
       <div class="text-sm font-medium opacity-70" id="username-display">Načítání...</div>
       
       <!-- Settings (Password) -->
+      <!-- Theme Toggle -->
+      <button class="btn btn-ghost btn-circle" id="theme-toggle" title="Přepnout téma">
+        <i data-lucide="sun" class="w-5 h-5" id="theme-icon"></i>
+      </button>
+
+      <!-- Settings (Password) -->
       <button class="btn btn-ghost btn-circle" onclick="settings_modal.showModal()">
         <i data-lucide="settings" class="w-5 h-5"></i>
       </button>
@@ -39,9 +45,9 @@
     <div class="toast toast-top toast-end z-50" id="toast-container"></div>
 
     <!-- Create Notification -->
-    <div class="card bg-base-200 shadow-xl border border-base-content/5">
+    <div class="card bg-base-100 shadow-xl border border-base-content/10">
       <div class="card-body">
-        <h2 class="card-title text-lg mb-4">Nová notifikace</h2>
+        <h2 class="card-title text-xl mb-4">Nová notifikace</h2>
         
         <form id="notification-form" class="space-y-4">
           <div class="form-control">
@@ -52,12 +58,18 @@
             </div>
           </div>
 
-          <div class="flex gap-4">
+          <div class="flex gap-4 items-end">
             <div class="form-control flex-1">
-              <input type="url" id="link" name="link" placeholder="Odkaz (volitelné)" class="input input-bordered w-full bg-base-100">
+              <label class="label">
+                <span class="label-text text-xs opacity-70">Odkaz (volitelné)</span>
+              </label>
+              <input type="url" id="link" name="link" placeholder="https://..." class="input input-bordered w-full" maxlength="200">
             </div>
-            <div class="form-control w-40">
-              <input type="date" id="expiresAt" name="expiresAt" class="input input-bordered w-full bg-base-100" required>
+            <div class="form-control w-48">
+              <label class="label">
+                <span class="label-text text-xs opacity-70">Expiruje dne</span>
+              </label>
+              <input type="date" id="expiresAt" name="expiresAt" class="input input-bordered w-full" required>
             </div>
           </div>
 
@@ -72,8 +84,8 @@
 
     <!-- Notifications List -->
     <div class="space-y-4">
-      <h3 class="font-bold text-lg px-1 flex items-center gap-2">
-        <i data-lucide="list" class="w-4 h-4 opacity-50"></i>
+      <h3 class="font-bold text-xl px-1 flex items-center gap-2">
+        <i data-lucide="bell" class="w-5 h-5 text-primary"></i>
         Aktivní notifikace
       </h3>
       
@@ -191,18 +203,22 @@
         const listEl = document.getElementById('notifications-list');
         if (notifications.length === 0) {
           listEl.innerHTML = `
-            <div class="text-center py-10 opacity-50">
-              <i data-lucide="bell-off" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
-              <p>Zatím žádné notifikace</p>
+            <div class="card bg-base-100 border border-base-content/10">
+              <div class="card-body text-center py-12 opacity-50">
+                <i data-lucide="bell-off" class="w-12 h-12 mx-auto mb-3 opacity-30"></i>
+                <p class="text-base">Zatím žádné notifikace</p>
+                <p class="text-sm opacity-70">Vytvořte první notifikaci výše</p>
+              </div>
             </div>`;
+          lucide.createIcons();
           return;
         }
 
         listEl.innerHTML = notifications.map(n => {
           const isExpired = new Date(n.expires_at) < new Date();
           return `
-            <div class="card bg-base-100 shadow-sm border border-base-content/10 hover:border-base-content/20 transition-all compact group">
-              <div class="card-body flex-row justify-between items-center py-4 px-6">
+            <div class="card bg-base-100 shadow-md border border-base-content/10 hover:shadow-lg hover:border-primary/30 transition-all group">
+              <div class="card-body flex-row justify-between items-center py-5 px-6">
                 
                 <div class="flex-1 min-w-0 pr-4">
                   <div class="flex items-center gap-3 mb-1">
@@ -319,7 +335,34 @@
     };
 
     function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
-    function formatDate(iso) { return iso ? new Date(iso).toLocaleDateString('cs-CZ') : ''; }
+    function formatDate(iso) { 
+      if (!iso) return '';
+      const date = new Date(iso);
+      return date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const htmlEl = document.documentElement;
+    
+    // Load saved theme or default to dark
+    const currentTheme = localStorage.getItem('theme') || 'mendelu-dark';
+    htmlEl.setAttribute('data-theme', currentTheme);
+    updateThemeIcon(currentTheme);
+    
+    themeToggle.addEventListener('click', () => {
+      const newTheme = htmlEl.getAttribute('data-theme') === 'mendelu-dark' ? 'mendelu' : 'mendelu-dark';
+      htmlEl.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
+      lucide.createIcons();
+    });
+    
+    function updateThemeIcon(theme) {
+      themeIcon.setAttribute('data-lucide', theme === 'mendelu-dark' ? 'sun' : 'moon');
+      lucide.createIcons();
+    }
 
     lucide.createIcons();
   </script>
