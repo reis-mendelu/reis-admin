@@ -1,97 +1,16 @@
 <!DOCTYPE html>
 <html lang="cs" data-theme="mendelu-dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>reIS Admin</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link href="styles.css" rel="stylesheet" type="text/css" />
-</head>
-<body class="min-h-screen flex items-center justify-center p-4 bg-base-300">
-
-  <div class="card w-full max-w-sm bg-base-200 shadow-xl border border-base-content/10">
-    <div class="card-body">
-      <div class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-primary mb-1">reIS <span class="text-base-content font-normal opacity-70">Admin</span></h1>
-        <p class="text-sm opacity-50">Správa notifikací pro spolky</p>
-      </div>
-
-      <div id="error-alert" class="alert alert-error text-sm shadow-lg mb-4 hidden"></div>
-
-      <form id="login-form" class="space-y-4">
-        <div class="form-control">
-          <label class="label"><span class="label-text">Email</span></label>
-          <input type="email" id="email" name="email" placeholder="admin@spolek.cz" class="input input-bordered w-full" required autocomplete="email">
-        </div>
-
-        <div class="form-control">
-          <label class="label"><span class="label-text">Heslo</span></label>
-          <input type="password" id="password" name="password" placeholder="••••••••" class="input input-bordered w-full" required autocomplete="current-password">
-        </div>
-
-        <div class="form-control mt-6">
-          <button type="submit" class="btn btn-primary w-full" id="submit-btn">
-            Vstoupit
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://zvbpgkmnrqyprtkyxkwn.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2YnBna21ucnF5cHJ0a3l4a3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NDU5NjYsImV4cCI6MjA4NDMyMTk2Nn0.8eaGOhlZHUf9uOlb6vL_P5D61bILFdgSu245kaIhMvQ';
-    
-    if (typeof window.supabaseClient === 'undefined') {
-      window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-    const supabaseClient = window.supabaseClient;
-
-    // Check if already logged in
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        window.location.href = 'dashboard.html';
-      }
-    }).catch((error) => {
-      console.error('Session check failed:', error.message);
-      // Silently continue to login page if session check fails
-    });
-
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('submit-btn');
-      const errorAlert = document.getElementById('error-alert');
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
-      errorAlert.classList.add('hidden');
-
-      try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) throw error;
-        window.location.href = 'dashboard.html';
-
-      } catch (error) {
-        errorAlert.textContent = 'Přihlášení selhalo: ' + error.message;
-        errorAlert.classList.remove('hidden');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Vstoupit';
-      }
-    });
-  </script>
-  <script>
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme') || 'mendelu-dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>reIS Admin</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

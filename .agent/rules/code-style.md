@@ -31,79 +31,59 @@ Before implementing, ask: **"What could go wrong?"**
 
 ---
 
-## 📝 HTML/JavaScript Standards
+## 📝 React & TypeScript Standards
 
-### HTML Structure
+### Component Structure
 
 **DO**:
-```html
-<!-- Semantic, clean structure -->
-<div class="card bg-base-200">
-  <div class="card-body">
-    <h2 class="card-title">Title</h2>
-    <p class="text-base-content/70">Description</p>
-  </div>
-</div>
+```tsx
+// Functional components with descriptive props
+interface NotificationCardProps {
+  title: string;
+  isExpired: boolean;
+}
+
+export default function NotificationCard({ title, isExpired }: NotificationCardProps) {
+  return (
+    <div className="card bg-base-200 border border-base-content/10">
+      <div className="card-body">
+        <h2 className="card-title">{title}</h2>
+        {isExpired && <span className="badge badge-error">Expired</span>}
+      </div>
+    </div>
+  );
+}
 ```
 
 **DON'T**:
-```html
-<!-- Excessive nesting, inline styles -->
-<div>
-  <div>
-    <div style="background: #f9fafb">
-      <div class="wrapper">
-        <h2>Title</h2>
-      </div>
-    </div>
-  </div>
-</div>
+```tsx
+// Avoid class components, avoid 'any' types, avoid innerHTML
+const BadComponent = (props: any) => {
+  return <div dangerouslySetInnerHTML={{ __html: props.content }} />;
+}
 ```
 
-### JavaScript Best Practices
+### State Management & Effects
 
-1. **Use modern JavaScript** (ES6+)
-   ```javascript
+1. **Use Hooks effectively**
+   ```tsx
    // ✅ Good
-   const btn = document.getElementById('submit-btn');
-   const { data, error } = await supabaseClient.auth.signIn(credentials);
-   
-   // ❌ Avoid
-   var btn = document.getElementById('submit-btn');
+   const [loading, setLoading] = useState(false);
+   useEffect(() => {
+     fetchData();
+   }, []);
    ```
 
-2. **Error handling**
-   ```javascript
+2. **Error handling in Async calls**
+   ```tsx
    // ✅ Good
    try {
-     const result = await apiCall();
-     if (result.error) throw result.error;
-     // Handle success
-   } catch (error) {
-     console.error('API call failed:', error.message);
-     showErrorAlert(error.message);
+     const { data, error } = await supabase.from('table').select();
+     if (error) throw error;
+     setData(data);
+   } catch (err: any) {
+     toast.error(err.message);
    }
-   
-   // ❌ Bad
-   const result = await apiCall(); // No error handling
-   ```
-
-3. **DOM manipulation**
-   ```javascript
-   // ✅ Good - Clear state management
-   function showLoading() {
-     submitBtn.disabled = true;
-     submitBtn.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
-   }
-   
-   function hideLoading() {
-     submitBtn.disabled = false;
-     submitBtn.textContent = 'Submit';
-   }
-   
-   // ❌ Bad - Direct inline manipulation
-   submitBtn.disabled = true;
-   submitBtn.innerHTML = '<span class="loading loading-spinner"></span>';
    ```
 
 ---
@@ -127,20 +107,24 @@ See [ui-guidelines.md](./ui-guidelines.md) for comprehensive UI rules.
 ```
 reis-admin/
 ├── .agent/              # Agent configuration
-│   ├── rules/          # Coding standards, UI guidelines
-│   └── workflows/      # Common workflows
-├── img/                # Images and assets
-├── *.html              # HTML pages
-├── input.css           # Tailwind source
-├── styles.css          # Generated CSS (do not edit)
-├── tailwind.config.js  # UI configuration
-└── package.json        # Dependencies and scripts
+├── src/                 # Application source
+│   ├── components/      # Reusable UI components
+│   ├── features/        # Feature-based logic (auth, notifications)
+│   ├── lib/             # Utilities and clients (supabase)
+│   ├── App.tsx          # Main entry component
+│   └── main.tsx         # React DOM anchor
+├── legacy/              # Archived legacy files
+├── index.html           # HTML entry (Vite template)
+├── input.css            # Tailwind 4 source
+├── vite.config.ts       # Vite configuration
+└── package.json         # Dependencies and scripts
 ```
 
 ### File Naming
-- **HTML files**: `kebab-case.html` (e.g., `index.html`, `dashboard.html`)
-- **Config files**: Standard names (`package.json`, `tailwind.config.js`)
-- **Assets**: Descriptive names (`favicon.png`, `logo-dark.svg`)
+- **Components**: `PascalCase.tsx`
+- **Features/Folders**: `kebab-case`
+- **Hooks/Utils**: `camelCase.ts`
+- **Config**: Standard names
 
 ---
 
@@ -192,8 +176,8 @@ if (!validateEmail(email)) {
 
 1. **Visual testing**: Test in browser (both light and dark themes)
 2. **Responsive testing**: Check mobile, tablet, desktop viewports
-3. **Error scenarios**: Test with invalid inputs, network errors
-4. **Build verification**: Run `npm run build:css` successfully
+3. **Build verification**: Run `npm run build` successfully
+4. **Type Safety**: Ensure no TypeScript errors in `src/`
 
 ### Manual Testing Checklist
 

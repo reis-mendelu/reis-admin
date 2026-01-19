@@ -1,11 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
 
-/* Themes are handled by Tailwind config via DaisyUI */
+@theme {
+  --font-inter: "Inter", sans-serif;
+  
+  /* Mendelu Brand Colors */
+  --color-brand-primary: #79be15;
+  --color-brand-primary-hover: #6aab12;
+  --color-brand-accent: #8dc843;
+  --color-brand-dark: #444444;
+  
+  /* Border Radius */
+  --radius-card: 12px;
+  --radius-button: 8px;
+}
 
-@layer base {
-  body {
-    @apply font-inter;
-  }
+/* DaisyUI 5 Custom Themes */
+@plugin "daisyui" {
+  themes: mendelu, mendelu-dark;
+}
+
+[data-theme="mendelu"] {
+  --color-primary: #79be15;
+  --btn-primary-content: #ffffff;
+  --color-secondary: #8dc843;
+  --color-accent: #00548f;
+  --color-neutral: #444444;
+  --color-base-100: #ffffff;
+  --color-base-200: #f9fafb;
+  --color-base-300: #f3f4f6;
+  --color-base-content: #111827;
+}
+
+[data-theme="mendelu-dark"] {
+  --color-primary: #79be15;
+  --btn-primary-content: #ffffff;
+  --color-secondary: #8dc843;
+  --color-accent: #3b82f6;
+  --color-neutral: #1f2937;
+  --color-base-100: #1f2937;
+  --color-base-200: #111827;
+  --color-base-300: #0f172a;
+  --color-base-content: #f3f4f6;
+}
+
+/* Global base styles */
+body {
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* SVG icon rendering optimization */
+svg {
+  shape-rendering: geometricPrecision;
 }

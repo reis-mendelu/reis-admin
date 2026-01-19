@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reIS Admin - Schvalování</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <h1 style="font-size: 1.5rem;">reIS Admin</h1>
+      </div>
+      <div class="nav-user">
+        <span id="username-display"></span>
+        <button class="btn btn-outline" id="logout-btn">Odhlásit</button>
+      </div>
+    </nav>
+
+    <div id="success-alert" class="alert alert-success hidden"></div>
+    <div id="error-alert" class="alert alert-error hidden"></div>
+
+    <!-- Pending notifications -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i data-lucide="bell" class="icon"></i> Čekající na schválení</h2>
+        <p>Notifikace od studentských spolků</p>
+      </div>
+
+      <div id="pending-list" class="notification-list">
+        <p style="color: var(--text-muted); text-align: center;">Načítání...</p>
+      </div>
+    </div>
+
+    <!-- All approved -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-header">
+        <h2><i data-lucide="check-circle" class="icon"></i> Schválené notifikace</h2>
+        <p>Aktivní notifikace viditelné studentům</p>
+      </div>
+
+      <div id="approved-list" class="notification-list">
+        <p style="color: var(--text-muted); text-align: center;">Načítání...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApproval } from './js/approval.js';
+    import { initTheme } from './js/theme.js';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme(); // Ensure theme is applied
+      initApproval();
+    });
+  </script>
+</body>
+</html>

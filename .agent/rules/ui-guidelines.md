@@ -247,20 +247,18 @@ Use Tailwind's opacity utilities for subtle effects:
 
 ## 🚀 Performance & Build
 
-### CSS Build Process
+### CSS Build Process (Vite/Tailwind 4)
 
-1. **Source**: `input.css` (Tailwind directives)
-2. **Output**: `styles.css` (compiled with DaisyUI)
-3. **Build Command**: `npm run build:css`
-4. **Watch Command**: `npm run dev` (auto-rebuild on changes)
+1. **Source**: `input.css` (Tailwind 4 directives + @theme)
+2. **Integration**: `import './input.css'` in `main.tsx`
+3. **Build Command**: `npm run build` (handled by @tailwindcss/vite)
+4. **Dev Command**: `npm run dev` (Hot Module Replacement)
 
-### When to Rebuild CSS
+### When to Modify CSS
 
-Rebuild CSS when you:
-- Add new HTML files
-- Use new Tailwind/DaisyUI classes
-- Modify `tailwind.config.js`
-- Change theme colors or spacing
+- Define global themes in `input.css` using `[data-theme="..."]`
+- Add custom `@theme` variables for brand-specific tokens
+- **NEVER** edit files in `dist/`
 
 ---
 
@@ -268,51 +266,37 @@ Rebuild CSS when you:
 
 - [ ] Used ONLY DaisyUI components (no custom CSS)
 - [ ] Used semantic color classes (`text-primary`, `bg-base-200`, etc.)
-- [ ] No hex codes in HTML/components
+- [ ] No hex codes in components (move to `@theme` in `input.css` if new)
 - [ ] Tested in both `mendelu` (light) and `mendelu-dark` themes
-- [ ] Used px-based spacing (no rem values)
-- [ ] Followed card/form/alert patterns from this guide
-- [ ] Ran `npm run build:css` to regenerate styles
-- [ ] Verified responsive behavior (mobile, tablet, desktop)
+- [ ] Used px-based spacing (Tailwind 4 config in `input.css`)
+- [ ] Verified responsive behavior via browser agent or personal inspection
 
 ---
 
 ## 🔍 Common Mistakes to Avoid
 
 ### ❌ DON'T:
-```html
-<!-- Custom CSS classes -->
-<div class="my-custom-button">Button</div>
+```tsx
+// Custom CSS classes in JSX
+<div className="my-custom-button">Button</div>
 
-<!-- Hex codes -->
-<div class="bg-[#79be15]">Content</div>
+// Hex codes in JSX
+<div className="bg-[#79be15]">Content</div>
 
-<!-- Arbitrary values -->
-<div class="p-[20px]">Content</div>
-
-<!-- Inline styles -->
-<div style="color: #79be15">Text</div>
-
-<!-- Mixing design systems -->
-<button class="bg-blue-500 text-white">Button</button>
+// Using rem units
+<div className="p-4">Content</div> // Standard Tailwind is OK if configured for px
 ```
 
 ### ✅ DO:
-```html
-<!-- DaisyUI components -->
-<button class="btn btn-primary">Button</button>
+```tsx
+// DaisyUI components
+<button className="btn btn-primary">Button</button>
 
-<!-- Semantic colors -->
-<div class="bg-primary text-primary-content">Content</div>
+// Path aliases
+import { supabase } from '@/lib/supabase';
 
-<!-- Standard spacing -->
-<div class="p-5">Content</div>
-
-<!-- DaisyUI utilities -->
-<div class="text-primary">Text</div>
-
-<!-- Consistent design system -->
-<button class="btn btn-primary">Button</button>
+// Semantic text opacity
+<span className="text-base-content/60">Muted</span>
 ```
 
 ---

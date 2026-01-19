@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="mendelu-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reIS Admin</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="styles.css" rel="stylesheet" type="text/css" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+</head>
+<body class="min-h-screen bg-base-300 text-base-content font-inter selection:bg-brand-primary selection:text-white">
+
+  <!-- Navbar -->
+  <div class="navbar bg-base-100/50 backdrop-blur border-b border-base-content/10 sticky top-0 z-50 px-6">
+    <div class="flex-1">
+      <a class="btn btn-ghost text-xl font-bold gap-2 text-primary">
+        reIS <span class="text-base-content font-normal opacity-70">Admin</span>
+      </a>
+    </div>
+    <div class="flex-none gap-4">
+      <div class="text-sm font-medium opacity-70" id="username-display">Načítání...</div>
+      
+      <!-- Settings (Password) -->
+      <!-- Theme Toggle -->
+      <button class="btn btn-ghost btn-circle" id="theme-toggle" title="Přepnout téma">
+        <i data-lucide="sun" class="w-5 h-5" id="theme-icon"></i>
+      </button>
+
+      <!-- Settings (Password) -->
+      <button class="btn btn-ghost btn-circle" onclick="settings_modal.showModal()">
+        <i data-lucide="settings" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Logout -->
+      <button class="btn btn-ghost btn-circle text-error" id="logout-btn">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="container max-w-3xl mx-auto p-6 space-y-8">
+    
+    <!-- Toast Container -->
+    <div class="toast toast-top toast-end z-50" id="toast-container"></div>
+
+    <!-- Create Notification -->
+    <div class="card bg-base-100 shadow-xl border border-base-content/10">
+      <div class="card-body">
+        <h2 class="card-title text-xl mb-4">Nová notifikace</h2>
+        
+        <form id="notification-form" class="space-y-4">
+          <div class="form-control">
+            <input type="text" id="title" name="title" placeholder="Text notifikace..." class="input input-bordered w-full bg-base-100" required maxlength="100">
+            <div class="label">
+              <span class="label-text-alt opacity-50">Stručná a jasná zpráva pro studenty</span>
+              <span class="label-text-alt opacity-50"><span id="title-count">0</span>/100</span>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-end">
+            <div class="form-control flex-1">
+              <label class="label">
+                <span class="label-text text-xs opacity-70">Odkaz (volitelné)</span>
+              </label>
+              <input type="url" id="link" name="link" placeholder="https://..." class="input input-bordered w-full" maxlength="200">
+            </div>
+            <div class="form-control w-48">
+              <label class="label">
+                <span class="label-text text-xs opacity-70">Expiruje dne</span>
+              </label>
+              <input type="date" id="expiresAt" name="expiresAt" class="input input-bordered w-full" required>
+            </div>
+          </div>
+
+          <div class="card-actions justify-end mt-2">
+            <button type="submit" class="btn btn-primary px-8" id="submit-btn">
+              Publikovat
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="space-y-4">
+      <h3 class="font-bold text-xl px-1 flex items-center gap-2">
+        <i data-lucide="bell" class="w-5 h-5 text-primary"></i>
+        Aktivní notifikace
+      </h3>
+      
+      <div id="notifications-list" class="space-y-3">
+        <div class="skeleton h-20 w-full rounded-box opacity-20"></div>
+        <div class="skeleton h-20 w-full rounded-box opacity-20"></div>
+      </div>
+    </div>
+
+    <!-- Tutorials Section -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between px-1">
+        <h3 class="font-bold text-xl flex items-center gap-2">
+          <i data-lucide="compass" class="w-5 h-5 text-primary"></i>
+          Tutoriály
+        </h3>
+        <button class="btn btn-primary btn-sm gap-2" onclick="openTutorialEditor()">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          Nový tutoriál
+        </button>
+      </div>
+      
+      <div id="tutorials-list" class="space-y-3">
+        <div class="skeleton h-20 w-full rounded-box opacity-20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Editor Modal -->
+  <dialog id="tutorial_modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-lg mb-6" id="tutorial-modal-title">Nový tutoriál</h3>
+      
+      <div class="space-y-6 max-h-[65vh] overflow-y-auto pr-2">
+        <!-- Basic Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Název tutoriálu *</span></label>
+            <input type="text" id="tutorial-title" class="input input-bordered" placeholder="např. Průvodce prvním rokem" required>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Stav</span></label>
+            <select id="tutorial-published" class="select select-bordered">
+              <option value="false">Koncept</option>
+              <option value="true">Publikováno</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-control">
+          <label class="label"><span class="label-text">Popis</span></label>
+          <input type="text" id="tutorial-description" class="input input-bordered" placeholder="Krátký popis pro studenty">
+        </div>
+
+        <!-- Slides -->
+        <div class="divider">Slidy</div>
+        
+        <div id="slides-container" class="space-y-4 min-h-[100px]">
+          <!-- Slides will be rendered here -->
+        </div>
+        
+        <button type="button" class="btn btn-outline btn-sm w-full gap-2" onclick="addSlide()">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          Přidat slide
+        </button>
+      </div>
+      
+      <div class="modal-action mt-6">
+        <button type="button" class="btn btn-ghost" onclick="tutorial_modal.close()">Zrušit</button>
+        <button type="button" class="btn btn-primary" id="save-tutorial-btn" onclick="saveTutorial()">
+          Uložit tutoriál
+        </button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Settings Modal (Password) -->
+  <dialog id="settings_modal" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-lg mb-4">Nastavení účtu</h3>
+      
+      <form id="password-form" class="space-y-4">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Nové heslo</span></label>
+          <input type="password" id="new-password" class="input input-bordered" required minlength="6">
+        </div>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Potvrzení hesla</span></label>
+          <input type="password" id="confirm-password" class="input input-bordered" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-neutral w-full mt-4" id="pwd-submit-btn">
+          Změnit heslo
+        </button>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
