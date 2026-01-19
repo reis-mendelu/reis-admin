@@ -152,18 +152,28 @@ export default function TutorialEditor({ isOpen, onClose, onSave, tutorialId, as
                  // Note: We should ideally delete images for these too, but that's a separate cleanup task
             }
 
-            // C. Upsert (Insert new + Update existing)
-            // We strip 'id' from new items so Supabase generates it, but keep it for updates
-            const upsertData = processedSlides.map(s => {
-                if (!s.id) {
-                    const { id, ...rest } = s; // Remove undefined ID for insert
-                    return rest;
-                }
-                return s;
-            });
+            // C. Separate inserts and updates for clarity and to avoid id issues
+            const slidesToInsert = processedSlides
+                .filter(s => !s.id)
+                .map(({ id, ...rest }) => rest); // Completely remove id field
+            
+            const slidesToUpdate = processedSlides.filter(s => s.id);
 
-            const { error: upsertError } = await supabase.from('tutorial_slides').upsert(upsertData);
-            if (upsertError) throw upsertError;
+            // Insert new slides
+            if (slidesToInsert.length > 0) {
+                const { error: insertError } = await supabase
+                    .from('tutorial_slides')
+                    .insert(slidesToInsert);
+                if (insertError) throw insertError;
+            }
+
+            // Update existing slides
+            if (slidesToUpdate.length > 0) {
+                const { error: updateError } = await supabase
+                    .from('tutorial_slides')
+                    .upsert(slidesToUpdate);
+                if (updateError) throw updateError;
+            }
 
             toast.success('Tutoriál uložen');
             onSave();
@@ -228,12 +238,12 @@ export default function TutorialEditor({ isOpen, onClose, onSave, tutorialId, as
                             {/* Basic Info Row 2: Description */}
                             <div className="form-control">
                                 <label className="label pt-0">
-                                    <span className="label-text font-semibold text-base-content/70">Doplňující popis</span>
+                                    <span className="label-text font-semibold text-base-content/80">Doplňující popis</span>
                                 </label>
                                 <textarea 
                                     value={description} 
                                     onChange={e => setDescription(e.target.value)} 
-                                    className="textarea textarea-bordered h-24 w-full leading-relaxed" 
+                                    className="textarea textarea-bordered h-24 w-full leading-relaxed focus:outline-none" 
                                     placeholder="Krátký popis pro studenty, co se v tutoriálu dozví..." 
                                 />
                             </div>

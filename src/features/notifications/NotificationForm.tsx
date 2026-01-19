@@ -47,7 +47,7 @@ export default function NotificationForm({ associationId, onSuccess }: Notificat
   };
 
   return (
-    <div className="card bg-base-100 shadow-xl border border-base-content/10">
+    <div className="card bg-base-100 shadow-lg border border-base-content/10">
       <div className="card-body">
         <h2 className="card-title text-xl mb-6">Nová notifikace</h2>
         
@@ -65,9 +65,9 @@ export default function NotificationForm({ associationId, onSuccess }: Notificat
                 required 
                 maxLength={100}
             />
-            <div className="label">
-              <span className="label-text-alt text-base-content/50 italic">Zobrazí se jako hlavní text v reISu</span>
-              <span className="label-text-alt font-mono">{title.length}/100</span>
+            <div className="label mt-0.5">
+              <span className="label-text-alt text-sm text-base-content/60 italic">Zobrazí se jako hlavní text v reISu</span>
+              <span className="label-text-alt text-sm font-mono opacity-70">{title.length}/100</span>
             </div>
           </div>
 

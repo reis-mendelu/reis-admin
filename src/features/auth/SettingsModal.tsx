@@ -43,45 +43,61 @@ export default function SettingsModal() {
          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.35a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
 
-      <dialog ref={modalRef} className="modal">
-        <div className="modal-box">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-          </form>
-          <h3 className="font-bold text-lg mb-4">Nastavení účtu</h3>
+      <dialog ref={modalRef} className="modal bg-base-300/50 backdrop-blur-sm">
+        <div className="modal-box p-0 overflow-hidden border border-base-content/10">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between p-6 border-b border-base-content/10 bg-base-100">
+            <h3 className="font-bold text-lg">Nastavení účtu</h3>
+            <form method="dialog">
+                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+            </form>
+          </div>
           
-          <form onSubmit={handlePasswordChange} className="space-y-4">
-            <div className="form-control">
-              <label className="label"><span className="label-text">Nové heslo</span></label>
-              <input 
-                type="password" 
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                className="input input-bordered" 
-                required 
-                minLength={6} 
-              />
-            </div>
-            <div className="form-control">
-              <label className="label"><span className="label-text">Potvrzení hesla</span></label>
-              <input 
-                type="password" 
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                className="input input-bordered" 
-                required 
-                minLength={6} 
-              />
-            </div>
-            <button type="submit" className="btn btn-neutral w-full mt-4" disabled={loading}>
-              {loading ? <span className="loading loading-spinner"></span> : 'Změnit heslo'}
-            </button>
-          </form>
+          <div className="p-6">
+            <form onSubmit={handlePasswordChange} className="space-y-6">
+                <div className="form-control">
+                    <label className="label pt-0">
+                        <span className="label-text font-semibold">Nové heslo</span>
+                    </label>
+                    <input 
+                        type="password" 
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        className="input input-bordered w-full" 
+                        placeholder="••••••••"
+                        required 
+                        minLength={6} 
+                    />
+                </div>
+
+                <div className="form-control">
+                    <label className="label pt-0">
+                        <span className="label-text font-semibold">Potvrzení hesla</span>
+                    </label>
+                    <input 
+                        type="password" 
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        className="input input-bordered w-full" 
+                        placeholder="••••••••"
+                        required 
+                        minLength={6} 
+                    />
+                </div>
+
+                <div className="pt-2">
+                    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                        {loading ? <span className="loading loading-spinner"></span> : 'Změnit heslo'}
+                    </button>
+                </div>
+            </form>
+          </div>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>
       </dialog>
+
     </>
   );
 }

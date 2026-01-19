@@ -35,7 +35,7 @@ export default function LoginScreen() {
             <h1 className="text-3xl font-bold text-primary mb-1">
               reIS <span className="text-base-content font-normal opacity-70">Admin</span>
             </h1>
-            <p className="text-sm opacity-50">Správa notifikací pro spolky</p>
+            <p className="text-base opacity-60 font-medium">Správa notifikací pro spolky</p>
           </div>
 
           {error && (

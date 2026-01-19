@@ -45,7 +45,7 @@ export default function NotificationsView({ associationId }: NotificationsViewPr
     <>
       <NotificationForm associationId={associationId} onSuccess={fetchNotifications} />
       
-      <div className="space-y-4">
+      <div className="space-y-4 pt-8">
         <h3 className="font-bold text-xl px-1 flex items-center gap-2">
           <Bell className="w-5 h-5 text-primary" />
           Aktivní notifikace

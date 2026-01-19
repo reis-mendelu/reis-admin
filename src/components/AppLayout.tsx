@@ -1,5 +1,10 @@
 import { ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
+import ThemeToggle from './ThemeToggle';
+import SettingsModal from '@/features/auth/SettingsModal';
+import { LogOut } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -9,23 +14,14 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, associationName, associationId, currentView }: AppLayoutProps) {
-  // We use window.location.pathname logic mapping in App.tsx or just pass view string
-  // For now, we assume App.tsx manages routing and passes 'currentView' to Sidebar via URL checking
-  
-  // Actually, standard router usage. We need to bridge the Router with the Sidebar's "onViewChange"
-  // But Sidebar expects simple strings.
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const handleViewChange = (view: string) => {
-    // Use hash-based navigation for GitHub Pages compatibility
-    window.location.hash = `#/${view}`;
+    navigate(`/${view}`);
   };
 
-  // Determine current view from URL if not provided
-  const inferredView = currentView || window.location.pathname.replace('/', '') || 'notifications';
-
-  // Debugging ID
-  console.log('Association ID:', associationId);
-  console.log('Association Name:', associationName);
+  const inferredView = currentView || location.pathname.replace('/', '') || 'notifications';
 
   return (
     <div className="flex min-h-screen bg-base-200 text-base-content font-inter">
@@ -36,29 +32,40 @@ export default function AppLayout({ children, associationName, associationId, cu
         associationId={associationId}
       />
       
-      {/* Main Content Area - Offset by Sidebar width on desktop */}
+      {/* Main Content Area */}
       <main className="flex-1 md:ml-20 flex flex-col min-h-screen transition-all duration-300">
         
-        {/* Top Header - Simplified for Admin */}
-        <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-2 bg-base-200/90 backdrop-blur-md border-b border-base-300/50">
+        {/* Top Header - Consolidated */}
+        <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 bg-base-100/80 backdrop-blur-md border-b border-base-content/10">
             <div>
-                <h1 className="text-xl font-bold tracking-tight text-base-content/90">
+                <h1 className="text-xl font-bold tracking-tight text-base-content">
                     {inferredView === 'notifications' && 'Notifikace'}
                     {inferredView === 'tutorials' && 'Tutoriály'}
                 </h1>
-                <p className="text-xs text-base-content/50 font-medium mt-0.5">
+                <p className="text-sm text-base-content/70 font-medium">
                     {associationName || 'Načítání...'}
                 </p>
             </div>
             
-            {/* Right side actions? Maybe Theme Toggle here? */}
-            {/* We can reproduce the theme toggle from Navbar here if needed */}
+            <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <SettingsModal />
+                <div className="divider divider-horizontal mx-1 py-2"></div>
+                <button 
+                    onClick={() => supabase.auth.signOut()}
+                    className="btn btn-ghost btn-circle text-error hover:bg-error/10"
+                    title="Odhlásit se"
+                >
+                    <LogOut className="w-5 h-5" />
+                </button>
+            </div>
         </header>
 
-        <div className="px-8 py-6 w-full max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="px-6 py-8 w-full max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
             {children}
         </div>
       </main>
     </div>
   );
 }
+

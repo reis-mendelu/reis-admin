@@ -45,17 +45,18 @@ export default function NotificationList({ notifications, onDelete }: Notificati
                 <div className="flex items-center gap-3 mb-1">
                   <span className="font-semibold text-base truncate">{n.title}</span>
                   {isExpired 
-                    ? <span className="badge badge-sm font-bold bg-base-200 text-base-content/40 border-base-content/10">Expirováno</span> 
-                    : <span className="badge badge-sm font-bold bg-primary/10 text-primary border-primary/20">Aktivní</span>}
+                    ? <span className="badge badge-sm badge-ghost font-bold opacity-60">Expirováno</span> 
+                    : <span className="badge badge-sm badge-success font-bold text-white">Aktivní</span>}
                 </div>
+
                 
-                <div className="flex items-center gap-4 text-xs opacity-50 group-hover:opacity-70 transition-opacity">
-                  <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {n.view_count || 0}</span>
-                  <span className="flex items-center gap-1"><MousePointer2 className="w-3 h-3" /> {n.click_count || 0}</span>
-                  <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(n.created_at).toLocaleDateString('cs-CZ')}</span>
+                <div className="flex items-center gap-4 text-sm opacity-60 group-hover:opacity-80 transition-opacity">
+                  <span className="flex items-center gap-1"><Eye className="w-4 h-4" /> {n.view_count || 0}</span>
+                  <span className="flex items-center gap-1"><MousePointer2 className="w-4 h-4" /> {n.click_count || 0}</span>
+                  <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(n.created_at).toLocaleDateString('cs-CZ')}</span>
                   {n.link && (
-                    <a href={n.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary">
-                      <LinkIcon className="w-3 h-3" /> Odkaz
+                    <a href={n.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary transition-colors">
+                      <LinkIcon className="w-4 h-4" /> Odkaz
                     </a>
                   )}
                 </div>

@@ -79,13 +79,14 @@ export default function TutorialList({ tutorials, onEdit, onDelete }: TutorialLi
                             <div className="flex items-center gap-3 mb-1">
                                 <span className="font-medium text-base truncate">{t.title}</span>
                                 {t.is_published 
-                                    ? <span className="badge badge-xs badge-success badge-outline">Publikováno</span> 
-                                    : <span className="badge badge-xs badge-ghost">Koncept</span>}
+                                    ? <span className="badge badge-sm badge-success font-bold text-white">Publikováno</span> 
+                                    : <span className="badge badge-sm badge-ghost font-bold opacity-60">Koncept</span>}
                             </div>
-                            <div className="flex items-center gap-4 text-xs opacity-50 group-hover:opacity-70 transition-opacity">
-                                <span className="flex items-center gap-1"><Layers className="w-3 h-3" /> {t.tutorial_slides?.[0]?.count || 0} slidů</span>
-                                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {formatDate(t.created_at)}</span>
-                                {t.description && <span className="truncate max-w-xs border-l border-base-content/20 pl-2 ml-2">{t.description}</span>}
+
+                            <div className="flex items-center gap-4 text-sm opacity-60 group-hover:opacity-80 transition-opacity">
+                                <span className="flex items-center gap-1"><Layers className="w-4 h-4" /> {t.tutorial_slides?.[0]?.count || 0} slidů</span>
+                                <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {formatDate(t.created_at)}</span>
+                                {t.description && <span className="truncate max-w-sm border-l border-base-content/20 pl-2 ml-2">{t.description}</span>}
                             </div>
                         </div>
                         <div className="flex gap-2">

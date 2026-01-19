@@ -55,3 +55,11 @@ body {
 svg {
   shape-rendering: geometricPrecision;
 }
+
+/* Fix double-border / focus outline glitch globally */
+input:focus, 
+textarea:focus,
+select:focus {
+  outline: 2px solid transparent !important;
+  outline-offset: 2px !important;
+}

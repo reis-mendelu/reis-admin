@@ -61,29 +61,29 @@ export const Sidebar = ({ currentView, onViewChange, associationName, associatio
 
             {/* Association "Profile" */}
             <div className="flex flex-col items-center gap-1 group relative">
-                <div className="w-10 h-10 rounded-full bg-base-100 flex items-center justify-center overflow-hidden ring-2 ring-base-300 group-hover:ring-primary/50 transition-all cursor-help shadow-sm">
-                    {associationId ? (
-                        <img 
-                            src={`/spolky/${associationId}.jpg`} 
-                            className="w-full h-full object-cover"
-                            alt={associationName}
-                            onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.parentElement!.innerText = associationName?.[0] || '?';
-                            }}
-                        />
-                    ) : (
-                        <span className="text-xs font-bold">{associationName?.[0] || '?'}</span>
-                    )}
-                </div>
-                
-                {/* Tooltip for Association Name */}
-                 <div className="absolute left-full ml-3 px-3 py-2 bg-gray-800 text-white text-xs font-medium rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none bottom-0 mb-2">
-                    {associationName}
-                    <div className="text-[10px] opacity-60 font-normal">Přihlášen jako spolek</div>
-                    <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-800" />
+                <div className="tooltip tooltip-right" data-tip={associationName}>
+                    <div className="avatar transition-all cursor-help hover:scale-105">
+                        <div className="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden shadow-sm bg-base-100 flex items-center justify-center">
+                            {associationId ? (
+                                <img 
+                                    src={`/spolky/${associationId}.jpg`} 
+                                    className="w-full h-full object-cover"
+                                    alt={associationName}
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        if (e.currentTarget.parentElement) {
+                                            e.currentTarget.parentElement.innerText = associationName?.[0] || '?';
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <span className="text-xs font-bold">{associationName?.[0] || '?'}</span>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
+
 
             {/* Logout */}
             <button
