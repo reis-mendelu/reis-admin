@@ -46,9 +46,15 @@ function TrendChart({ data, days }: { data: { date: string; count: number }[]; d
                     {days >= 14 && <span className="flex items-center gap-1"><span className="w-3 h-1 bg-primary rounded" /> 7denní průměr</span>}
                 </div>
             </div>
-            <div className="relative h-40">
+            <div className="relative h-40 flex">
+                {/* Y-axis labels */}
+                <div className="flex flex-col justify-between text-[10px] text-base-content/40 pr-2 py-0.5 shrink-0 w-6 text-right">
+                    <span>{maxVal}</span>
+                    <span>{Math.round(maxVal / 2)}</span>
+                    <span>0</span>
+                </div>
                 {/* Bars */}
-                <div className="flex items-end gap-[2px] h-full">
+                <div className="flex items-end gap-[2px] h-full flex-1 relative">
                     {data.map((d, i) => (
                         <div key={i} className="flex-1 h-full flex items-end group relative">
                             <div
@@ -60,24 +66,24 @@ function TrendChart({ data, days }: { data: { date: string; count: number }[]; d
                             </div>
                         </div>
                     ))}
+                    {/* 7-day MA line overlay */}
+                    {days >= 14 && (
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                            <polyline
+                                fill="none"
+                                stroke="oklch(var(--p))"
+                                strokeWidth="2"
+                                strokeLinejoin="round"
+                                points={ma7.map((v, i) => {
+                                    const x = (i / (ma7.length - 1)) * 100;
+                                    const y = 100 - (v / ma7Max) * 100;
+                                    return `${x},${y}`;
+                                }).join(' ')}
+                                vectorEffect="non-scaling-stroke"
+                            />
+                        </svg>
+                    )}
                 </div>
-                {/* 7-day MA line overlay */}
-                {days >= 14 && (
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
-                        <polyline
-                            fill="none"
-                            stroke="oklch(var(--p))"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                            points={ma7.map((v, i) => {
-                                const x = (i / (ma7.length - 1)) * 100;
-                                const y = 100 - (v / ma7Max) * 100;
-                                return `${x},${y}`;
-                            }).join(' ')}
-                            vectorEffect="non-scaling-stroke"
-                        />
-                    </svg>
-                )}
             </div>
             <div className="flex justify-between text-[10px] text-base-content/40 mt-1">
                 <span>{data[0]?.date}</span>
