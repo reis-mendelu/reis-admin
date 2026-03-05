@@ -1,29 +1,10 @@
 import { useState } from 'react';
 import { useUsageStats } from './hooks/useUsageStats';
 import { useFeedbackStats } from './hooks/useFeedbackStats';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
-function DeltaIndicator({ current, previous }: { current: number; previous: number }) {
-    if (previous === 0 && current === 0) return <span className="text-xs text-base-content/40">—</span>;
-    if (previous === 0) return <span className="text-xs text-success flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> nový</span>;
-
-    const pct = Math.round(((current - previous) / previous) * 100);
-    if (pct === 0) return <span className="text-xs text-base-content/40 flex items-center gap-0.5"><Minus className="w-3 h-3" /> beze změny</span>;
-    if (pct > 0) return <span className="text-xs text-success flex items-center gap-0.5"><TrendingUp className="w-3 h-3" /> +{pct} %</span>;
-    return <span className="text-xs text-error flex items-center gap-0.5"><TrendingDown className="w-3 h-3" /> {pct} %</span>;
-}
-
-function StatCard({ label, value, subtitle, previous }: { label: string; value: number | string; subtitle: string; previous?: number }) {
-    return (
-        <div className="bg-base-100 rounded-lg border border-base-300 shadow-sm p-4">
-            <div className="text-sm text-base-content/60 mb-1">{label}</div>
-            <div className="text-3xl font-bold tracking-tight">{value}</div>
-            <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-base-content/40">{subtitle}</span>
-                {previous !== undefined && <DeltaIndicator current={Number(value)} previous={previous} />}
-            </div>
-        </div>
-    );
+function formatDate(iso: string) {
+    const d = new Date(iso + 'T00:00:00');
+    return `${d.getDate()}.${d.getMonth() + 1}.`;
 }
 
 function TrendChart({ data, days }: { data: { date: string; count: number }[]; days: number }) {
@@ -46,37 +27,29 @@ function TrendChart({ data, days }: { data: { date: string; count: number }[]; d
                     {days >= 14 && <span className="flex items-center gap-1"><span className="w-3 h-1 bg-primary rounded" /> 7denní průměr</span>}
                 </div>
             </div>
-            <div className="relative h-40 flex">
-                {/* Y-axis labels */}
-                <div className="flex flex-col justify-between text-[10px] text-base-content/40 pr-2 py-0.5 shrink-0 w-6 text-right">
-                    <span>{maxVal}</span>
-                    <span>{Math.round(maxVal / 2)}</span>
-                    <span>0</span>
-                </div>
-                {/* Bars */}
-                <div className="flex items-end gap-[2px] h-full flex-1 relative">
+            <div className="relative h-48">
+                <div className="flex items-end gap-[2px] h-full relative">
                     {data.map((d, i) => (
-                        <div key={i} className="flex-1 h-full flex items-end group relative">
+                        <div key={i} className="flex-1 h-full flex flex-col items-center justify-end">
+                            <span className="text-[10px] font-semibold text-base-content/70 mb-0.5">{d.count}</span>
                             <div
                                 className="w-full bg-primary/20 rounded-t-sm min-h-[2px] transition-all"
-                                style={{ height: `${(d.count / maxVal) * 100}%` }}
+                                style={{ height: `${(d.count / maxVal) * 70}%` }}
                             />
-                            <div className="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-base-300 text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-                                {d.date}: {d.count}
-                            </div>
+                            <span className="text-[9px] text-base-content/40 mt-0.5 leading-none">{formatDate(d.date)}</span>
                         </div>
                     ))}
                     {/* 7-day MA line overlay */}
                     {days >= 14 && (
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
                             <polyline
                                 fill="none"
                                 stroke="oklch(var(--p))"
-                                strokeWidth="2"
+                                strokeWidth="1.5"
                                 strokeLinejoin="round"
                                 points={ma7.map((v, i) => {
                                     const x = (i / (ma7.length - 1)) * 100;
-                                    const y = 100 - (v / ma7Max) * 100;
+                                    const y = 100 - (v / ma7Max) * 70 - 15;
                                     return `${x},${y}`;
                                 }).join(' ')}
                                 vectorEffect="non-scaling-stroke"
@@ -84,10 +57,6 @@ function TrendChart({ data, days }: { data: { date: string; count: number }[]; d
                         </svg>
                     )}
                 </div>
-            </div>
-            <div className="flex justify-between text-[10px] text-base-content/40 mt-1">
-                <span>{data[0]?.date}</span>
-                <span>{data[data.length - 1]?.date}</span>
             </div>
         </div>
     );
@@ -121,40 +90,8 @@ export default function AnalyticsView() {
         );
     }
 
-    const stickinessDisplay = usage ? `${Math.round(usage.stickiness * 100)} %` : '—';
-
     return (
         <div className="space-y-8">
-            {/* Key Metrics */}
-            <section>
-                <h2 className="text-xl font-bold mb-4">Přehled</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <StatCard
-                        label="Uživatelé dnes"
-                        value={usage?.dau ?? 0}
-                        subtitle="vs. včera"
-                        previous={usage?.dauPrev}
-                    />
-                    <StatCard
-                        label="Tento týden"
-                        value={usage?.wau ?? 0}
-                        subtitle="vs. předchozí týden"
-                        previous={usage?.wauPrev}
-                    />
-                    <StatCard
-                        label="Tento měsíc"
-                        value={usage?.mau ?? 0}
-                        subtitle="vs. předchozí měsíc"
-                        previous={usage?.mauPrev}
-                    />
-                    <StatCard
-                        label="Zapojení"
-                        value={stickinessDisplay}
-                        subtitle="denní / měsíční uživatelé"
-                    />
-                </div>
-            </section>
-
             {/* Trend */}
             <section>
                 <div className="flex items-center justify-between mb-4">
