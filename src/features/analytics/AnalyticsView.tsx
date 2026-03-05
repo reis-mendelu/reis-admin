@@ -10,6 +10,11 @@ function formatDate(iso: string) {
 function TrendChart({ data, days }: { data: { date: string; count: number }[]; days: number }) {
     if (!data.length) return null;
     const maxVal = Math.max(...data.map(d => d.count), 1);
+    const isLast = (i: number) => i === data.length - 1;
+
+    // Show date labels at reasonable intervals
+    const labelEvery = data.length <= 7 ? 1 : data.length <= 14 ? 2 : Math.ceil(data.length / 8);
+    const showLabel = (i: number) => i === 0 || isLast(i) || i % labelEvery === 0;
 
     // 7-day moving average
     const ma7 = data.map((_, i) => {
@@ -20,23 +25,39 @@ function TrendChart({ data, days }: { data: { date: string; count: number }[]; d
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold">Denní aktivní uživatelé</h3>
-                <div className="flex items-center gap-3 text-[10px] text-base-content/50">
-                    <span className="flex items-center gap-1"><span className="w-3 h-1 bg-primary/30 rounded" /> denně</span>
-                    {days >= 14 && <span className="flex items-center gap-1"><span className="w-3 h-1 bg-primary rounded" /> 7denní průměr</span>}
-                </div>
+                {days >= 14 && (
+                    <div className="flex items-center gap-1 text-[10px] text-base-content/40">
+                        <span className="w-4 h-[2px] bg-primary rounded" /> 7denní průměr
+                    </div>
+                )}
             </div>
-            <div className="relative h-48">
-                <div className="flex items-end gap-[2px] h-full relative">
+            <div className="relative h-56">
+                <div className="flex items-end gap-1 h-full relative">
                     {data.map((d, i) => (
-                        <div key={i} className="flex-1 h-full flex flex-col items-center justify-end">
-                            <span className="text-[10px] font-semibold text-base-content/70 mb-0.5">{d.count}</span>
+                        <div key={i} className="flex-1 h-full flex flex-col items-center justify-end group relative">
+                            {/* Hover tooltip */}
+                            <div className="hidden group-hover:flex absolute -top-6 left-1/2 -translate-x-1/2 bg-base-300 text-xs font-bold px-2 py-1 rounded whitespace-nowrap z-10 shadow-sm">
+                                {d.count}
+                            </div>
+                            {/* Bar */}
                             <div
-                                className="w-full bg-primary/20 rounded-t-sm min-h-[2px] transition-all"
-                                style={{ height: `${(d.count / maxVal) * 70}%` }}
+                                className={`w-full rounded-t transition-all min-h-[3px] ${
+                                    isLast(i)
+                                        ? 'bg-primary'
+                                        : 'bg-base-content/10 group-hover:bg-base-content/25'
+                                }`}
+                                style={{ height: `${(d.count / maxVal) * 80}%` }}
                             />
-                            <span className="text-[9px] text-base-content/40 mt-0.5 leading-none">{formatDate(d.date)}</span>
+                            {/* Date label */}
+                            {showLabel(i) ? (
+                                <span className={`text-[10px] mt-1.5 leading-none ${isLast(i) ? 'text-primary font-semibold' : 'text-base-content/40'}`}>
+                                    {formatDate(d.date)}
+                                </span>
+                            ) : (
+                                <span className="mt-1.5 text-[10px] leading-none">&nbsp;</span>
+                            )}
                         </div>
                     ))}
                     {/* 7-day MA line overlay */}
@@ -45,11 +66,12 @@ function TrendChart({ data, days }: { data: { date: string; count: number }[]; d
                             <polyline
                                 fill="none"
                                 stroke="oklch(var(--p))"
-                                strokeWidth="1.5"
+                                strokeWidth="2"
                                 strokeLinejoin="round"
+                                strokeLinecap="round"
                                 points={ma7.map((v, i) => {
                                     const x = (i / (ma7.length - 1)) * 100;
-                                    const y = 100 - (v / ma7Max) * 70 - 15;
+                                    const y = 100 - (v / ma7Max) * 80 - 8;
                                     return `${x},${y}`;
                                 }).join(' ')}
                                 vectorEffect="non-scaling-stroke"
