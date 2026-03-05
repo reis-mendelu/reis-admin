@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
-interface UsageStats {
+export interface UsageStats {
     dau: number;
+    dauPrev: number;
     wau: number;
+    wauPrev: number;
     mau: number;
-    avgDaily30: number;
+    mauPrev: number;
+    stickiness: number; // DAU/MAU ratio (0-1)
+    stickinessPrev: number;
     dailyTrend: { date: string; count: number }[];
-    dayOfWeek: { day: string; avg: number }[];
 }
 
-const DAY_NAMES = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
+function uniqueUsers(rows: { student_id: string; usage_date: string }[], from: string, to: string) {
+    return new Set(rows.filter(r => r.usage_date >= from && r.usage_date <= to).map(r => r.student_id)).size;
+}
 
 export function useUsageStats(days = 30) {
     const [stats, setStats] = useState<UsageStats | null>(null);
@@ -23,29 +28,40 @@ export function useUsageStats(days = 30) {
     async function fetchStats() {
         setLoading(true);
         const today = new Date().toISOString().split('T')[0];
-        const startDate = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+        const twoWeeksAgo = new Date(Date.now() - 14 * 86400000).toISOString().split('T')[0];
+        const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
+        const twoMonthsAgo = new Date(Date.now() - 60 * 86400000).toISOString().split('T')[0];
+
+        // Fetch enough data for current + previous period comparisons
+        const fetchStart = new Date(Date.now() - Math.max(days, 60) * 86400000).toISOString().split('T')[0];
 
         const { data: rows } = await supabase
             .from('daily_active_usage')
             .select('student_id, usage_date')
-            .gte('usage_date', startDate)
+            .gte('usage_date', fetchStart)
             .lte('usage_date', today);
 
         if (!rows) { setLoading(false); return; }
 
-        // DAU = unique students today
-        const dau = new Set(rows.filter(r => r.usage_date === today).map(r => r.student_id)).size;
+        const dau = uniqueUsers(rows, today, today);
+        const dauPrev = uniqueUsers(rows, yesterday, yesterday);
 
-        // WAU = unique students last 7 days
-        const wau = new Set(rows.filter(r => r.usage_date >= weekAgo).map(r => r.student_id)).size;
+        const wau = uniqueUsers(rows, weekAgo, today);
+        const wauPrev = uniqueUsers(rows, twoWeeksAgo, weekAgo);
 
-        // MAU = unique students last 30 days
-        const mau = new Set(rows.map(r => r.student_id)).size;
+        const mau = uniqueUsers(rows, monthAgo, today);
+        const mauPrev = uniqueUsers(rows, twoMonthsAgo, monthAgo);
 
-        // Daily trend: unique users per day
+        const stickiness = mau > 0 ? dau / mau : 0;
+        const stickinessPrev = mauPrev > 0 ? dauPrev / mauPrev : 0;
+
+        // Daily trend for the selected period
+        const startDate = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
         const byDate: Record<string, Set<string>> = {};
         for (const r of rows) {
+            if (r.usage_date < startDate) continue;
             if (!byDate[r.usage_date]) byDate[r.usage_date] = new Set();
             byDate[r.usage_date].add(r.student_id);
         }
@@ -54,25 +70,7 @@ export function useUsageStats(days = 30) {
             .map(([date, set]) => ({ date, count: set.size }))
             .sort((a, b) => a.date.localeCompare(b.date));
 
-        const avgDaily30 = dailyTrend.length > 0
-            ? Math.round(dailyTrend.reduce((s, d) => s + d.count, 0) / dailyTrend.length)
-            : 0;
-
-        // Day-of-week distribution
-        const dowCounts: Record<number, number[]> = {};
-        for (const { date, count } of dailyTrend) {
-            const dow = new Date(date + 'T00:00:00').getDay();
-            if (!dowCounts[dow]) dowCounts[dow] = [];
-            dowCounts[dow].push(count);
-        }
-        const dayOfWeek = [1, 2, 3, 4, 5, 6, 0].map(dow => ({
-            day: DAY_NAMES[dow],
-            avg: dowCounts[dow]
-                ? Math.round(dowCounts[dow].reduce((s, v) => s + v, 0) / dowCounts[dow].length)
-                : 0,
-        }));
-
-        setStats({ dau, wau, mau, avgDaily30, dailyTrend, dayOfWeek });
+        setStats({ dau, dauPrev, wau, wauPrev, mau, mauPrev, stickiness, stickinessPrev, dailyTrend });
         setLoading(false);
     }
 
