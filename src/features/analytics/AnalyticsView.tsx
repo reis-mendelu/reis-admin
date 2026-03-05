@@ -18,11 +18,13 @@ function SimpleBarChart({ data, xKey, yKey, label }: { data: Record<string, any>
             <h3 className="text-sm font-semibold mb-3">{label}</h3>
             <div className="flex items-end gap-2 h-40">
                 {data.map((d, i) => (
-                    <div key={i} className="flex flex-col items-center flex-1">
-                        <div
-                            className="w-full bg-primary rounded-t-sm min-h-[2px] transition-all"
-                            style={{ height: `${(d[yKey] / maxVal) * 100}%` }}
-                        />
+                    <div key={i} className="flex flex-col items-center flex-1 h-full">
+                        <div className="flex-1 w-full flex items-end">
+                            <div
+                                className="w-full bg-primary rounded-t-sm min-h-[2px] transition-all"
+                                style={{ height: `${(d[yKey] / maxVal) * 100}%` }}
+                            />
+                        </div>
                         <span className="text-[10px] mt-1 text-base-content/60">{d[xKey]}</span>
                         <span className="text-[10px] font-medium">{d[yKey]}</span>
                     </div>
@@ -39,11 +41,13 @@ function SimpleTrendChart({ data }: { data: { date: string; count: number }[] })
             <h3 className="text-sm font-semibold mb-3">Denní aktivní uživatelé</h3>
             <div className="flex items-end gap-[2px] h-40">
                 {data.map((d, i) => (
-                    <div key={i} className="flex flex-col items-center flex-1 group relative">
-                        <div
-                            className="w-full bg-primary/80 rounded-t-sm min-h-[2px] hover:bg-primary transition-all"
-                            style={{ height: `${(d.count / maxVal) * 100}%` }}
-                        />
+                    <div key={i} className="flex flex-col items-center flex-1 h-full group relative">
+                        <div className="flex-1 w-full flex items-end">
+                            <div
+                                className="w-full bg-primary/80 rounded-t-sm min-h-[2px] hover:bg-primary transition-all"
+                                style={{ height: `${(d.count / maxVal) * 100}%` }}
+                            />
+                        </div>
                         <div className="hidden group-hover:block absolute -top-8 bg-base-300 text-xs px-2 py-1 rounded whitespace-nowrap">
                             {d.date}: {d.count}
                         </div>
